@@ -15,7 +15,7 @@ class RegistrationForm extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         alert('接收到数据：' + JSON.stringify(values));
-        this.file.src="http://localhost:8000/api/file";
+        this.file.src="http://47.93.224.216:8001/api/file";
       }
     });
   }
