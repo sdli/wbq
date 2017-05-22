@@ -2,6 +2,9 @@ var express = require('express');
 var path = require('path');
 var app = new (express)();
 var httpProxy = require('http-proxy');
+var compression = require('compression');
+
+app.use(compression());
 
 var port = 3061;
 var targetUrl = 'http://47.93.224.216:' + port;
