@@ -1,0 +1,42 @@
+.loginForm {
+  max-width: 300px;
+}
+.loginFormForgot {
+  float: right;
+}
+.loginFormButton{
+  width: 100%;
+}
+.center{
+  text-align: center;
+  margin-top: 98px;
+}
+
+.loginPosition{
+  width: 320px;
+  position: relative;
+  left: 50%;
+  margin-left: -160px;
+  border: 1px solid #f0f0f0;
+  padding: 32px 16px;
+  border-radius: 4px;
+  margin-bottom: 160px;
+  overflow: hidden;
+  margin-top: 32px;
+  box-shadow: 0 0 3px #e3e3e3;
+}
+
+@media screen and (max-width:480px){
+    .loginPosition{
+      width: 90%;
+      left: 0;
+      margin-top: 16px;
+      margin-left: 5%;
+      margin-bottom: 32px;
+    }
+    .center{
+      text-align: center;
+      margin-top: 16px;
+      display: none;
+    }
+}
