@@ -11,7 +11,7 @@ app.use(session({
   secret: 'sessiontest',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000*30, secure: false}
+  cookie: { maxAge: 1000*60*5, secure: false}
 }));
 
 app.use(bodyParser.urlencoded({ extended: false}));

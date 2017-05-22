@@ -46,13 +46,13 @@ export default {
     alert: "none"
   },
   subscriptions: {
-    // setup({ dispatch, history }) {
-    //   history.listen(({pathname})=>{
-    //     if(pathname!="/login"){
-    //       dispatch({type:"getAuth"});
-    //     }
-    //   });
-    // },
+    setup({ dispatch, history }) {
+      history.listen(({pathname})=>{
+        if(pathname!="/login"){
+          dispatch({type:"getAuth"});
+        }
+      });
+    },
   },
   effects: {
     *getAuth({}, { call, put }) { 
