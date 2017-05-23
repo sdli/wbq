@@ -10,4 +10,4 @@ const ProConfig ={
     serverPort: "8001"
 };
 
-module.exports = proConfig;
+module.exports = ProConfig;
