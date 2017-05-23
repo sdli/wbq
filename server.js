@@ -3,11 +3,13 @@ var path = require('path');
 var app = new (express)();
 var httpProxy = require('http-proxy');
 var compression = require('compression');
+var config = require("./src/utils/configs");
 
 app.use(compression());
 
-var port = 3061;
-var targetUrl = 'http://47.93.224.216:' + port;
+var port = config.apiPort;
+var serverPort = config.serverPort;
+var targetUrl = config.server + ":" + port;
 var proxy = httpProxy.createProxyServer({
   target: targetUrl
 });
@@ -19,11 +21,11 @@ app.use('/api', (req, res) => {
   proxy.web(req, res, { target: targetUrl });
 });
 
-app.listen(8001,function(error) {
+app.listen(serverPort,function(error) {
   if (error) {
     console.error(error)
   } else {
-    console.info("==> 🌎  Server is listening on port %s. Open up http://localhost:%s/ in your browser.", 8000, 8000)
+    console.info("==> 🌎  Server is listening on port %s. Open up http://localhost:%s/ in your browser.", serverPort, serverPort)
   }
 });
 

@@ -52,7 +52,7 @@ class NormalLoginForm extends React.Component {
                         <Button type="primary" htmlType="submit" className={styles.loginFormButton}>
                             登录
                         </Button>
-                        （没有账户）： <a href="">购买云东家收银机!</a>
+                        （没有账户）： <a href="tel:0755-86524857">请联系云东家客服：0755-86524857!</a>
                         </FormItem>
                     </Form>
                     <Alert message="用户名或密码不正确" type="error" showIcon style={{display:alert}} />

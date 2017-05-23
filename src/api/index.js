@@ -1,6 +1,8 @@
 var app = new (require('express'))();
 var bodyParser = require("body-parser");
-var port = 3061;
+var config = require("../utils/configs");
+
+var port = config.apiPort;
 var session = require("express-session");
 var captchapng = require('captchapng');
 var cookieParser = require("cookie-parser");
@@ -103,8 +105,22 @@ app.get('/img',function(req,res,next){
 });
 
 app.get('/file',function(req,res,next){
-    console.log(path.join(__dirname,"/lib/test.xls"));
     res.download(path.join(__dirname,"./lib/test.xls"),'test.xls');
+});
+
+app.post('/getExcel',function(req,res,next){
+    let {shopname,type,startTime,endTime} = req.body;
+    let result = {
+        code : '1',
+        shopname: shopname,
+        type: type,
+        startTime: startTime,
+        endTime: endTime,
+        url: config.server+":"+config.serverPort+"/api/file"
+    };
+    res.setHeader("Access-Control-Allow-Origin","*");
+    res.setHeader("Content-Type","application/json");
+    res.json(result);
 });
 
 app.listen(port,function(error) {

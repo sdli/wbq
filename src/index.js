@@ -10,6 +10,7 @@ app.use({});
 
 // 3. Model
 app.model(require('./models/login'));
+app.model(require('./models/fetch'));
 
 // 4. Router
 app.router(require('./router'));

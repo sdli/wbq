@@ -6,26 +6,28 @@ import ContentComponent from "../components/contents/indexContent";
 import IndexSider from "../components/menu/indexDropDown";
 
 
-const Contents = function(){
+const Contents = function({dispatch,src,ifDownload}){
   return(
       <div style={{position:"relative",padding:"32px 0px"}}>
         <div style={{width:"50%",float:"left"}}>
-            <ContentComponent />
+            <ContentComponent dispatch={dispatch} src={src} loading={ifDownload} />
         </div>
         <div style={{clear:"both"}}></div>
         <div style={{padding:"16px 0px"}}>
-          <div style={{backgroundColor:"#f6f6f6",padding:"8px 0"}}>
+          <div style={{backgroundColor:"#f6f6f6",padding:"8px"}}>
             <p>注意事项：</p>
+            <p>1. 此应用下载为原始数据；</p>
+            <p>2. raw data数据量可能会较大，暂定下载起始时间间隔不超过1个月；</p>
           </div>
         </div>
       </div>
   );
 };
-function IndexPage() {
+function IndexPage({dispatch,fetch}) {
   return (
     <Layout 
       headerMenu={<HeaderMenu />} 
-      ContentComponent={<Contents />}
+      ContentComponent={<Contents dispatch={dispatch} src={fetch.src} ifDownload={fetch.ifDownload} />}
       IndexSider={<IndexSider />}
     />
   );
@@ -35,4 +37,4 @@ IndexPage.propTypes = {
 
 };
 
-export default connect()(IndexPage);
+export default connect(({fetch})=>{return {fetch,};})(IndexPage);
