@@ -108,6 +108,16 @@ app.get('/file',function(req,res,next){
     res.download(path.join(__dirname,"./lib/test.xls"),'test.xls');
 });
 
+app.post("/test",function(req,res,next){
+    let result = {
+        code : '1',
+        test: "test",
+    };
+    res.setHeader("Access-Control-Allow-Origin","*");
+    res.setHeader("Content-Type","application/json");
+    res.json(result);
+});
+
 app.post('/getExcel',function(req,res,next){
     let {shopname,type,startTime,endTime} = req.body;
     let result = {
