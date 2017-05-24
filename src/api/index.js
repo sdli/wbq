@@ -112,10 +112,18 @@ app.post("/test",function(req,res,next){
     let result = {
         code : '1',
         test: "test",
+        url: "http://47.93.224.216/file"
     };
     res.setHeader("Access-Control-Allow-Origin","*");
     res.setHeader("Content-Type","application/json");
     res.json(result);
+});
+
+app.get('/testpipe',function(req,res,next){
+    var reqUrl = "http://47.93.224.216/test";
+    req.pipe(request(reqUrl,function(error,response,body) {
+        console.log('代理返回的数据',body);
+    })).pipe(res);
 });
 
 app.post('/getExcel',function(req,res,next){

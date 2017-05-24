@@ -5,7 +5,7 @@ import objToQuery from "../utils/objToQuery";
 const fetchExcel = {
   start:function*(values){
       console.log(objToQuery(values));
-      let data = yield request('/api/getExcel', {
+      let data = yield request('/api/testpipe', {
           method: 'POST',
           headers: {
               "Content-type": "application/x-www-form-urlencoded; charset=UTF-8" 
