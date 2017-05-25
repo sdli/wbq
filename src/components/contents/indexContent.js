@@ -25,7 +25,6 @@ class RegistrationForm extends React.Component {
             startTime: Date.parse(values["timePicker"][0]["_d"]),
             endTime: Date.parse(values["timePicker"][1]["_d"])
           };
-          console.log(initValues);
           if (!err) {
               dispatch({type:"fetch/getExcel",values:initValues})
           }
@@ -34,13 +33,14 @@ class RegistrationForm extends React.Component {
   }
 
   handleChange(value) {
-      console.log(`selected ${value}`);
   }
 
   checkDate = (rule, value, callback) => {
-      var timestamp1 = Date.parse(value[0]["_d"]);
-      var timestamp2 = Date.parse(value[1]["_d"]);
-      if((timestamp2-timestamp1)/1000 > 60*60*24*30){
+      var timestamp1 = (typeof value !== "undefined")?Date.parse(value[0]["_d"]):null;
+      var timestamp2 = (typeof value !== "undefined")?Date.parse(value[1]["_d"]):null;
+      if(timestamp1 == null || timestamp2 == null){
+        callback("请选择起始时间！");
+      }else if((timestamp2-timestamp1)/1000 > 60*60*24*30){
         callback('起始时间和终止时间不超过1个月！');
       }else{
         callback();
@@ -50,7 +50,7 @@ class RegistrationForm extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { autoCompleteResult } = this.state;
-    const {dispatch,src,loading} = this.props;
+    const {dispatch,src,loading,shops} = this.props;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -74,10 +74,9 @@ class RegistrationForm extends React.Component {
       },
     };
 
-    const shops=[{name:"温碧泉1店",code:"skdjfisejf"},{name:"温碧泉2店",code:"235j293u5u"},{name:"温碧泉3店",code:"1234j239rj"}];
-    const sheets=[{name:"商品查询",code:"1"},{name:"交易订单",code:"2"},{name:"销售员",code:"3"}];
+    const sheets=[{name:"商品查询",code:"1"},{name:"交易订单",code:"2"},{name:"收银台账单",code:"3"}];
     const rangeConfig = {
-      rules: [{ type: 'array', required: true, message: '请选择时间',format:"YYYY-MM-DD HH:mm:ss" },{validator:this.checkDate}],
+      rules: [{ type: 'array', required: true, message: '请选择时间' },{validator:this.checkDate}],
     };
 
     return (
@@ -92,12 +91,12 @@ class RegistrationForm extends React.Component {
               rules: [{
                 required: true, message: '请选择店铺名称',
               }],
-              initialValue: "skdjfisejf"
+              initialValue: (typeof shops[0] != "undefined")?shops[0].storesId:null
             })(
               <Select style={{ width: 120 }} onChange={this.handleChange}>
-                  {shops.map((val,index)=>{
+                  {shops && shops.map((val,index)=>{
                       return(
-                          <Option key={index} value={val.code}>{val.name}</Option>
+                          <Option key={index} value={val.storesId}>{val.storesName}</Option>
                       );
                   })}
               </Select>
@@ -136,7 +135,7 @@ class RegistrationForm extends React.Component {
             hasFeedback
           >
             {getFieldDecorator('timePicker', rangeConfig)(
-              <RangePicker />
+              <RangePicker format="YYYY-MM-DD" />
             )}
           </FormItem>
 

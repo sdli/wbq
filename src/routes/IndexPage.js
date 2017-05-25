@@ -6,11 +6,11 @@ import ContentComponent from "../components/contents/indexContent";
 import IndexSider from "../components/menu/indexDropDown";
 
 
-const Contents = function({dispatch,src,ifDownload}){
+const Contents = function({dispatch,src,ifDownload,shops}){
   return(
-      <div style={{position:"relative",padding:"32px 0px"}}>
+      <div style={{position:"relative",padding:"32px 0px",minHeight:"600px"}}>
         <div style={{width:"50%",float:"left"}}>
-            <ContentComponent dispatch={dispatch} src={src} loading={ifDownload} />
+            <ContentComponent dispatch={dispatch} src={src} loading={ifDownload} shops={shops} />
         </div>
         <div style={{clear:"both"}}></div>
         <div style={{padding:"16px 0px"}}>
@@ -23,11 +23,11 @@ const Contents = function({dispatch,src,ifDownload}){
       </div>
   );
 };
-function IndexPage({dispatch,fetch}) {
+function IndexPage({dispatch,fetch,login}) {
   return (
     <Layout 
       headerMenu={<HeaderMenu />} 
-      ContentComponent={<Contents dispatch={dispatch} src={fetch.src} ifDownload={fetch.ifDownload} />}
+      ContentComponent={<Contents dispatch={dispatch} src={fetch.src} ifDownload={fetch.ifDownload} shops={login.shopList} />}
       IndexSider={<IndexSider />}
     />
   );
@@ -37,4 +37,4 @@ IndexPage.propTypes = {
 
 };
 
-export default connect(({fetch})=>{return {fetch,};})(IndexPage);
+export default connect(({fetch,login})=>{return {fetch,login,};})(IndexPage);

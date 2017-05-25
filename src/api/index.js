@@ -7,85 +7,37 @@ var session = require("express-session");
 var captchapng = require('captchapng');
 var cookieParser = require("cookie-parser");
 var path = require("path");
+var apis = require("./lib");
 
 app.use(cookieParser());
 app.use(session({
   secret: 'sessiontest',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000*60*5, secure: false}
+  cookie: { maxAge: 1000*3600*24, secure: false}
 }));
 
 app.use(bodyParser.urlencoded({ extended: false}));
 
-// setResponse(app);
-app.post('/login',function(req,res,next){
-    let sess = req.session;
-    let username = req.body.username;
-    let password = req.body.password;
-    if(sess.count){
-        sess.count++;
-    }else{
-        sess.count =1;
-    }
-    if(username == 'wenbiquan' && password == 'wenbiquan123'){
+//监听登录
+app.post('/login',function(req,res,next){ apis.loginStart(req,res);});
 
-        //加密返回sha1加密token，过期时间未永不过期。
-        //但用户离线后自动清除token。
-        const crypto = require('crypto');
-        const config = require('./lib/config');
-        const hash = crypto.createHash('sha1');
-        const expire = Date.parse(new Date())/1000+7200;
-        hash.update(username+password+config.key+expire);
-        const result = {
-            status: 1,
-            code: '1',
-            msg: 'succ',
-            count: sess.count,
-            token: hash.digest("hex"),
-            expire: expire
-        };
-        sess.status = 1;
-        sess.username = username;
-        sess.expire = expire;
-        res.setHeader("Content-Type","application/json");
-        res.json(result);
-        sess.save();
-    }else{
-        const result = {
-            status: 0,
-            code: '0',
-            msg: 'fail',
-            count: sess.count,
-            username: username
-        };
-        sess.status = 0;
-        res.setHeader("Content-Type","application/json");
-        res.json(result);
-    }
-});
+//监听shoplist
+app.post("/getShopList",function(req,res,next){ apis.getShopList(req,res); });
 
-app.post('/loadAuth',function(req,res,next){
-  let loginStatus = (typeof req.session.status === "undefined")?false:req.session.status;
-  if(loginStatus){
-      let result = {
-          code : '1',
-          username: req.session.username,
-          msg : 'login auth OK!'
-      };
-      res.setHeader("Access-Control-Allow-Origin","*");
-      res.setHeader("Content-Type","application/json");
-      res.json(result);
-  }else{
-    let result = {
-        code : '0',
-        username: "steven?",
-        msg : 'no auth!'
-    };
-      res.setHeader("Access-Control-Allow-Origin","*");
-    res.setHeader("Content-Type","application/json");
-    res.json(result);
-  }
+//监听loadAuth
+app.post('/loadAuth',apis.loadAuth);
+
+//监听获取excel
+app.post('/getExcel',function(req,res,next){
+    let {shopname,type,startTime,endTime} = req.body;
+    switch (type){
+        case "1": apis.getGoodsList(req,res,shopname);break;
+        case "2": apis.getOrderList(req,res,shopname,startTime,endTime);break;
+        case "3": apis.getSalesList(req,res,shopname,startTime,endTime);break;
+        default:
+              res.json(config.reloadResponse);
+    }
 });
 
 app.get('/img',function(req,res,next){
@@ -112,39 +64,11 @@ app.post("/test",function(req,res,next){
     let result = {
         code : '1',
         test: "test",
-        url: "http://47.93.224.216/file"
+        url: "http://47.93.224.216:3061/file"
     };
     res.setHeader("Access-Control-Allow-Origin","*");
     res.setHeader("Content-Type","application/json");
     res.json(result);
 });
 
-app.get('/testpipe',function(req,res,next){
-    var reqUrl = "http://47.93.224.216/test";
-    req.pipe(request(reqUrl,function(error,response,body) {
-        console.log('代理返回的数据',body);
-    })).pipe(res);
-});
-
-app.post('/getExcel',function(req,res,next){
-    let {shopname,type,startTime,endTime} = req.body;
-    let result = {
-        code : '1',
-        shopname: shopname,
-        type: type,
-        startTime: startTime,
-        endTime: endTime,
-        url: config.server+":"+config.serverPort+"/api/file"
-    };
-    res.setHeader("Access-Control-Allow-Origin","*");
-    res.setHeader("Content-Type","application/json");
-    res.json(result);
-});
-
-app.listen(port,function(error) {
-  if (error) {
-    console.error(error)
-  } else {
-    console.info("==> 🌎  API listening on port %s. Open up http://localhost:%s/ in your browser.", port, port)
-  }
-});
+app.listen(port,apis.listen);

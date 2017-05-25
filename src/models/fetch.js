@@ -1,11 +1,11 @@
 import { routerRedux } from 'dva/router';
 import request from "../utils/request";
 import objToQuery from "../utils/objToQuery";
+import config from "../utils/configs";
 
 const fetchExcel = {
   start:function*(values){
-      console.log(objToQuery(values));
-      let data = yield request('/api/testpipe', {
+      let data = yield request('/api/getExcel', {
           method: 'POST',
           headers: {
               "Content-type": "application/x-www-form-urlencoded; charset=UTF-8" 
@@ -14,10 +14,9 @@ const fetchExcel = {
           credentials: 'include'
       });
 
-      console.log(data);
       //成功后返回effects yield结果
       if(parseInt(data.data.code) >=1){
-            return data.data.url;
+            return config.yunposServer + ":" + config.yunposPort + data.data.data.url;
         }else{
             return false;
         }

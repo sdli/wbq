@@ -7,7 +7,6 @@ import ContentComponent from "../components/form/loginForm";
 const LoginPage = ({login,dispatch})=>{
 
   const handleSubmit=function(loginData){
-        console.log(loginData);
         dispatch({type:"login/loginStart",loginInfo:loginData});
   }
 

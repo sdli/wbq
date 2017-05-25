@@ -12,12 +12,10 @@ const LoginFetch = {
               credentials: 'include'
         });
 
-        console.log(data);
         //成功后返回effects yield结果
         return data.data.code>0?true:false;
   },
   login:function*(loginInfo){
-      console.log(objToQuery(loginInfo));
       let data = yield request('/api/login', {
           method: 'POST',
           headers: {
@@ -27,23 +25,36 @@ const LoginFetch = {
           credentials: 'include'
       });
 
-      console.log(data);
       //成功后返回effects yield结果
-      if(parseInt(data.data.code) >=1){
-            localStorage.token=data.data.token;
-            return true;
-        }else{
-            return false;
+      switch(parseInt(data.data.code)){
+            case 200: return true;break;
+            case 400: return false;break;
+            default : return false;
         }
-      }
+      },
+    getShopList: function*(){
+      let data = yield request('/api/getShopList', {
+          method: 'POST',
+          headers: {
+              "Content-type": "application/x-www-form-urlencoded; charset=UTF-8" 
+          },
+          credentials: 'include'
+      });
+      //成功后返回effects yield结果
+      switch(parseInt(data.data.code)){
+            case 200: return data;break;
+            case 400: return false;break;
+            default : return false;
+        }
+      },
 };
 
 export default {
-
   namespace: 'login',
   state: {
     status: false,
-    alert: "none"
+    alert: "none",
+    shopList:[]
   },
   subscriptions: {
     setup({ dispatch, history }) {
@@ -58,6 +69,13 @@ export default {
     *getAuth({}, { call, put }) { 
       if(!(yield call(LoginFetch.check))){
         yield put(routerRedux.push('/login'));
+      }else{
+        var shopList = yield call(LoginFetch.getShopList);
+        if(shopList){
+          yield put({type:"shopList",data:shopList.data.data});
+        }else{
+          yield put(routerRedux.push('/login'));
+        }
       }
     },
     *loginStart({loginInfo},{call,put}){
@@ -77,6 +95,9 @@ export default {
     },
     loginWaiting(){
       return {alert:"none"};
+    },
+    shopList(state,{data}){
+      return {shopList: data};
     }
   },
 };
