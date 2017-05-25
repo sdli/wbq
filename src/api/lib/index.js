@@ -1,4 +1,5 @@
 var config = require("../../utils/configs");
+import fetchRequest  from "../../utils/request";
 var date  = require("../utils/date");
 var request = require("request");
 var port = config.apiPort;
@@ -114,12 +115,22 @@ function loginStart(req,res){
  * @param {*请求参数} res 
  */
 const getShopList= function(req,res){
+    var tokenG = getToken(req);
+    var realToken = getYield(tokenG);
+    console.log({
+        userId:req.session.userId,
+        headers:{
+            "Content-type": "application/json;charset=UTF-8",
+            "authorization": realToken
+        },
+        url: config.getServerUrl('stores')
+    });
     request.post({
         url: config.getServerUrl('stores'),
         body: JSON.stringify({userId:req.session.userId}),
-        header:{
-            "Content-type": "application/json;charset=UTF-8",
-            "Authorization": getToken(req)
+        headers:{
+            "Content-type": "application/json",
+            "authorization": realToken
         }
     }, function(err,httpResponse,body){
         let result = JSON.parse(body);
@@ -129,33 +140,36 @@ const getShopList= function(req,res){
     });
 }
 
-const getToken = function(req){
+/**
+ * 获取token
+ * @param {*请求数据} req 
+ */
+const getToken = function*(req){
     var sess = req.session;
     var {username,password,token,expire} = sess;
     if(username && password && token && expire){
-        if(expire > Date.parse(new Date())){
-            return token;
+        if(expire > Date.parse(new Date())/1000){
+            yield token;
         }else{
-            return request.post({
-                url: config.getServerUrl('login'),
+            var result = yield fetchRequest(config.getServerUrl('login'),{
                 body: JSON.stringify({
                     phone:username,
                     password:password
                 }),
+                method: 'POST',
                 header:{
                     "Content-type": "application/json;charset=UTF-8"
                 }
-            }, function(err,httpResponse,body){
-                let result = JSON.parse(body);
-                if(result.code == "200"){
-                    sess.username = username;
-                    sess.password = password;
-                    sess.token = result.data.access_token;
-                    sess.userId = result.data.id;
-                    sess.expire = Date.parse(new Date())/1000 + 10;
-                    return sess.token;
-                }
             });
+            console.log("from fetch");
+            if(result.code == "200"){
+                sess.username = username;
+                sess.password = password;
+                sess.token = result.data.access_token;
+                sess.userId = result.data.id;
+                sess.expire = Date.parse(new Date())/1000 + 10;
+                yield result.data.access_token;
+            }
         }
     }
 }
@@ -187,6 +201,17 @@ function loadAuth(req,res,next){
     res.setHeader("Content-Type","application/json");
     res.json(result);
   }
+}
+
+function getYield(token){
+    var realToken = token.next();
+    if(typeof realToken.value === "string"){
+        return realToken.value;
+    }else if(typeof realToken.value === "object"){
+        return Promise.resolve(realToken.value);
+    }else{
+        getYield(token);
+    }
 }
 
 /**

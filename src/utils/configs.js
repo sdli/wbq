@@ -28,7 +28,7 @@ const ProConfig ={
     server:"http://183.234.63.50",
     apiPort: "3061",
     serverPort: "8001",
-    yunposServer: "http://120.76.100.12",
+    yunposServer: "http://120.76.100.12",//http://192.168.1.129:9300/ http://183.234.63.50
     yunposPort: "9300",
     yunposApi:{
         login: "/api/user/login",
@@ -50,4 +50,4 @@ const ProConfig ={
     }
 };
 
-module.exports = ProConfig;
+module.exports = config;
