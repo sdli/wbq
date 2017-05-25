@@ -40,35 +40,4 @@ app.post('/getExcel',function(req,res,next){
     }
 });
 
-app.get('/img',function(req,res,next){
-    var pngNum = parseInt(Math.random()*9000+1000);
-    req.session.pngNum = pngNum;
-    var p = new captchapng(80,30,parseInt(Math.random()*9000+1000)); // width,height,numeric captcha 
-    p.color(0, 0, 0, 0);  // First color: background (red, green, blue, alpha) 
-    p.color(80, 80, 80, 255); // Second color: paint (red, green, blue, alpha) 
-
-    var img = p.getBase64();
-    var imgbase64 = new Buffer(img,'base64');
-    res.writeHead(200, {
-        'Content-Type': 'image/png'
-    });
-    res.end(imgbase64);
-    next();
-});
-
-app.get('/file',function(req,res,next){
-    res.download(path.join(__dirname,"./lib/test.xls"),'test.xls');
-});
-
-app.post("/test",function(req,res,next){
-    let result = {
-        code : '1',
-        test: "test",
-        url: "http://47.93.224.216:3061/file"
-    };
-    res.setHeader("Access-Control-Allow-Origin","*");
-    res.setHeader("Content-Type","application/json");
-    res.json(result);
-});
-
 app.listen(port,apis.listen);
