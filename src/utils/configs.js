@@ -25,9 +25,9 @@ const config ={
 };
 
 const ProConfig ={
-    server:"http://localhost",
-    apiPort: "3060",
-    serverPort: "8000",
+    server:"http://183.234.63.50",
+    apiPort: "3061",
+    serverPort: "8001",
     yunposServer: "http://120.76.100.12",
     yunposPort: "9300",
     yunposApi:{
