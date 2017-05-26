@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.post('/login', function(req, res, next) { apis.loginStart(req, res); });
 
 //监听shoplist
-app.post("/getShopList", function(req, res, next) { co(apis.getShopList(req, res)); });
+app.post("/getShopList", function(req, res, next) { apis.getShopList(req, res,{userId:req.session.userId}); });
 
 //监听loadAuth
 app.post('/loadAuth', apis.loadAuth);
@@ -34,7 +34,7 @@ app.post('/getExcel', function(req, res, next) {
     let { shopname, type, startTime, endTime } = req.body;
     switch (type) {
         case "1":
-            apis.getGoodsList(req, res, shopname);
+            apis.getGoodsList(req, res, {storesId: shopname});
             break;
         case "2":
             apis.getOrderList(req, res, shopname, startTime, endTime);
