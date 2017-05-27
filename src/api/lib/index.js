@@ -1,58 +1,10 @@
-var config = require("../../utils/configs");
+import config from "../utils/configs";
 import fetchRequest from "../../utils/request";
-var date = require("../utils/date");
-var request = require("request");
+import date from "../utils/date";
+import request from "request";
+import co from 'co';
+
 var port = config.apiPort;
-var co = require('co');
-
-
-/**
- * 获取订单信息
- * @param {*请求数据} req 
- * @param {*返回数据} res 
- * @param {*商铺id} shopname 
- * @param {*起始时间} startTime 
- * @param {*终止时间} endTime 
- */
-function getOrderList(req, res, shopname, startTime, endTime) {
-    request.post({
-        url: config.getServerUrl('orders'),
-        body: JSON.stringify({ storesId: shopname, startTime: date(startTime), endTime: date(endTime) }),
-        header: {
-            "Content-type": "application/json;charset=UTF-8",
-            "Authorization": getToken(req)
-        }
-    }, function(err, httpResponse, body) {
-        let result = JSON.parse(body);
-        if (result.code == "200") {
-            res.json(result);
-        }
-    });
-}
-
-/**
- * 获取收银台信息
- * @param {*请求数据} req 
- * @param {*返回数据} res 
- * @param {*商铺id} shopname 
- * @param {*起始时间} startTime 
- * @param {*终止时间} endTime 
- */
-function getSalesList(req, res, shopname, startTime, endTime) {
-    request.post({
-        url: config.getServerUrl('cashiers'),
-        body: JSON.stringify({ storesId: shopname, startTime: date(startTime), endTime: date(endTime) }),
-        header: {
-            "Content-type": "application/json;charset=UTF-8",
-            "Authorization": getToken(req)
-        }
-    }, function(err, httpResponse, body) {
-        let result = JSON.parse(body);
-        if (result.code == "200") {
-            res.json(result);
-        }
-    });
-}
 
 /**
  * 请求登录接口
@@ -90,13 +42,13 @@ function loginStart(req, res) {
 
 
 /**
- * 获取店铺列表
+ * 接口quest方法获取封装，一次callback
  * @param {*请求参数} req 
  * @param {*请求参数} res 
  */
 const InitFetch = function(met,url,vali) {
         const method = met;
-        const validator = (typeof vali === "undefined" || vali == null)?vali:null;
+        const validator = (typeof vali !== "undefined" || vali != null)?vali:null;
         const tryToken = function(req) {
             var sess = req.session;
             var { username, password, token, expire } = sess;
@@ -123,7 +75,6 @@ const InitFetch = function(met,url,vali) {
                         "Content-type": "application/json;charset=UTF-8"
                     }
                 });
-                console.log(result);
                 if (result.data.code == "200") {
                     sess.token = result.data.data.access_token;
                     sess.userId = result.data.data.id;
@@ -131,7 +82,6 @@ const InitFetch = function(met,url,vali) {
                     realToken = sess.token;
                 }
             }
-            console.log(realToken);
             if(method.toLowerCase() == "post"){
                 request.post(Object.assign({body:JSON.stringify(initData)},{
                     headers: {
@@ -141,10 +91,9 @@ const InitFetch = function(met,url,vali) {
                     url: url
                 }),function(err,response,body){
                     let result = JSON.parse(body);
-                    console.log(result);
                     if(result.code == "200"){
                         if(validator){
-                            res.json(validator(result,req));
+                            validator(result,req,res);
                         }else{
                             res.json(result);
                         }
@@ -152,11 +101,31 @@ const InitFetch = function(met,url,vali) {
                         res.json(config.reloadResponse);
                     }
                 });
+            }else{
+                request({
+                    mothod: "GET",
+                    url: url,
+                    headers:{
+                        "authorization": realToken
+                    }
+                }).pipe(res);
             }
         });
     }
 }
 
+/**
+ * 接口二次封装。第二个callback
+ * @param {*接口类型} type 
+ */
+function downLoadUrl(type){
+    return InitFetch("post",config.getServerUrl(type),function(result,req,res){
+        var data = result;
+        req.session[type]=data.data.url;
+        data.data.url=config.server+":"+config.serverPort+"/api/file/"+type;
+        res.json(data);
+    });
+}
 
 /**
  * 加载认证
@@ -196,20 +165,20 @@ function listen(error) {
     if (error) {
         console.error(error)
     } else {
-        console.info("==> 🌎  API listening on port %s. Open up http://localhost:%s/ in your browser.", port, port)
+        console.info("==> 🌎  API listening on port %s.", port, port)
     }
 }
 
-function downLoadExcel(){
-
-}
-
+/**
+ * export整合
+ */
 const funcs = {
-    getGoodsList: InitFetch("post",config.getServerUrl("goods"),function(result,req){var data = result;req.session.goodsExcel=data.data.url;data.data.url=config.server+":"+"port"+"/file/goodsExcel";return data;}),
-    getOrderList: getOrderList,
-    getSalesList: getSalesList,
+    getGoodsList: downLoadUrl("goods"),
+    getOrderList: downLoadUrl("orders"),
+    getCashierList: downLoadUrl("cashiers"),
     loginStart: loginStart,
     getShopList: InitFetch("post",config.getServerUrl("stores")),
+    initFetch: InitFetch,
     loadAuth: loadAuth,
     listen: listen
 };

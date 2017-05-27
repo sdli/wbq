@@ -4,7 +4,7 @@ import Layout from "../components/layout/layout.main";
 import HeaderMenu from "../components/menu/headerMenu.js";
 import ContentComponent from "../components/contents/indexContent";
 import IndexSider from "../components/menu/indexDropDown";
-
+import Loading from "../components/layout/loading.main";
 
 const Contents = function({dispatch,src,ifDownload,shops}){
   return(
@@ -23,18 +23,18 @@ const Contents = function({dispatch,src,ifDownload,shops}){
       </div>
   );
 };
-function IndexPage({dispatch,fetch,login}) {
+function IndexPage({dispatch,fetch,login,loading}) {
+  console.log(loading);
+  if(loading.models.login) return null;
   return (
-    <Layout 
+    (typeof login.shopList !=="undefined"&& login.shopList.length != 0)?<Layout 
       headerMenu={<HeaderMenu />} 
       ContentComponent={<Contents dispatch={dispatch} src={fetch.src} ifDownload={fetch.ifDownload} shops={login.shopList} />}
       IndexSider={<IndexSider />}
-    />
+    />:<Loading />
   );
 }
 
-IndexPage.propTypes = {
+IndexPage.propTypes = {};
 
-};
-
-export default connect(({fetch,login})=>{return {fetch,login,};})(IndexPage);
+export default connect(({fetch,login,loading})=>{return {fetch,login,loading};})(IndexPage);

@@ -135,7 +135,7 @@ class RegistrationForm extends React.Component {
             hasFeedback
           >
             {getFieldDecorator('timePicker', rangeConfig)(
-              <RangePicker format="YYYY-MM-DD" />
+              <RangePicker format="YYYY-MM-DD" style={{textAlign:"left"}} />
             )}
           </FormItem>
 

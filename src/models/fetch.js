@@ -16,7 +16,7 @@ const fetchExcel = {
 
       //成功后返回effects yield结果
       if(parseInt(data.data.code) >=1){
-            return config.yunposServer + ":" + config.yunposPort + data.data.data.url;
+            return  data.data.data.url;
         }else{
             return false;
         }

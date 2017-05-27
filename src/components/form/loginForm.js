@@ -21,7 +21,8 @@ class NormalLoginForm extends React.Component {
 
     render() {
         const { getFieldDecorator } = this.props.form;
-        const {handleSubmit,alert,dispatch} = this.props;
+        const {handleSubmit,alert,dispatch,netFail} = this.props;
+        console.log(alert);
         return (
             <div>
                 <h1 className={styles.center}>温碧泉报表中心</h1>
@@ -56,6 +57,7 @@ class NormalLoginForm extends React.Component {
                         </FormItem>
                     </Form>
                     <Alert message="用户名或密码不正确" type="error" showIcon style={{display:alert}} />
+                    <Alert message="服务器连接错误，请稍后重试！" type="error" showIcon style={{display:netFail?"block":"none"}} />
                 </div>
             </div>
         );

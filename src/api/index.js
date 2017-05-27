@@ -1,7 +1,8 @@
 var app = new(require('express'))();
 var bodyParser = require("body-parser");
-var config = require("../utils/configs");
-
+import config from "./utils/configs";
+var request = require("request");
+var date = require("./utils/date");
 var port = config.apiPort;
 var session = require("express-session");
 var captchapng = require('captchapng');
@@ -11,6 +12,7 @@ var apis = require("./lib");
 var co = require('co');
 
 app.use(cookieParser());
+
 app.use(session({
     secret: 'sessiontest',
     resave: false,
@@ -34,17 +36,38 @@ app.post('/getExcel', function(req, res, next) {
     let { shopname, type, startTime, endTime } = req.body;
     switch (type) {
         case "1":
-            apis.getGoodsList(req, res, {storesId: shopname});
+            apis.getGoodsList(req, res, {storesId:shopname});
             break;
         case "2":
-            apis.getOrderList(req, res, shopname, startTime, endTime);
+            apis.getOrderList(req, res, {storesId:shopname, startTime: date(parseInt(startTime)), endTime:date(parseInt(endTime))});
             break;
         case "3":
-            apis.getSalesList(req, res, shopname, startTime, endTime);
+            apis.getCashierList(req, res, {storesId:shopname, startTime: date(parseInt(startTime)), endTime:date(parseInt(endTime))});
             break;
         default:
             res.json(config.reloadResponse);
     }
+});
+
+app.get(/file/,function(req,res,next){
+    let url = config.yunposServer+":"+config.yunposPort;
+    switch (req.originalUrl){
+        case "/file/goods":
+            url += req.session.goods;
+            break;
+        case "/file/orders":
+            url += req.session.orders;
+            break;
+        case "/file/cashiers":
+            url += req.session.cashiers;
+            break;
+        default:
+            res.json(
+                {code:0}
+            );
+    }
+    let startFetch = apis.initFetch("get",url);
+    startFetch(req,res);
 });
 
 app.listen(port, apis.listen);

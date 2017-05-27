@@ -1,0 +1,6 @@
+apps:
+  - script   : ./server.js
+    name     : 'wbq-server'
+  - script : ./src/api/index.js
+    name   : 'wbq-api'
+    interpreter: 'babel-node'

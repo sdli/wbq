@@ -4,34 +4,33 @@ import objToQuery from "../utils/objToQuery";
 
 const LoginFetch = {
   check: function*(){
-        let data = yield request('/api/loadAuth', {
-              method: 'POST',
-              headers: {
-                  "Content-type": "application/x-www-form-urlencoded; charset=UTF-8" 
-              },
-              credentials: 'include'
+      let data = yield request('/api/loadAuth', {
+            method: 'POST',
+            headers: {
+                "Content-type": "application/x-www-form-urlencoded; charset=UTF-8" 
+            },
+            credentials: 'include'
         });
-
-        //成功后返回effects yield结果
-        return data.data.code>0?true:false;
+        return data.data.code >0?true:false;
   },
   login:function*(loginInfo){
-      let data = yield request('/api/login', {
-          method: 'POST',
-          headers: {
-              "Content-type": "application/x-www-form-urlencoded; charset=UTF-8" 
-          },
-          body: objToQuery(loginInfo),
-          credentials: 'include'
-      });
+        let data = yield request('/api/login', {
+            method: 'POST',
+            headers: {
+                "Content-type": "application/x-www-form-urlencoded; charset=UTF-8" 
+            },
+            body: objToQuery(loginInfo),
+            credentials: 'include'
+        });
 
-      //成功后返回effects yield结果
-      switch(parseInt(data.data.code)){
-            case 200: return true;break;
-            case 400: return false;break;
-            default : return false;
+        console.log(data);
+        //成功后返回effects yield结果
+        switch(parseInt(data.data.code)){
+              case 200: return true;break;
+              case 400: return false;break;
+              default : return false;
         }
-      },
+    },
     getShopList: function*(){
       let data = yield request('/api/getShopList', {
           method: 'POST',
@@ -40,6 +39,7 @@ const LoginFetch = {
           },
           credentials: 'include'
       });
+      console.log(data);
       //成功后返回effects yield结果
       switch(parseInt(data.data.code)){
             case 200: return data;break;
@@ -54,7 +54,8 @@ export default {
   state: {
     status: false,
     alert: "none",
-    shopList:[]
+    shopList:[],
+    netFail: false
   },
   subscriptions: {
     setup({ dispatch, history }) {
@@ -66,23 +67,25 @@ export default {
     },
   },
   effects: {
-    *getAuth({}, { call, put }) { 
-      if(!(yield call(LoginFetch.check))){
-        yield put(routerRedux.push('/login'));
-      }else{
-        var shopList = yield call(LoginFetch.getShopList);
-        if(shopList){
-          yield put({type:"shopList",data:shopList.data.data});
+    *getAuth({}, { call, put }) {
+        if(!(yield call(LoginFetch.check))){
+              yield put(routerRedux.push('/login'));
         }else{
-          yield put(routerRedux.push('/login'));
+            var shopList = yield call(LoginFetch.getShopList);
+            console.log(shopList);
+            if(typeof shopList != null){
+              yield put({type:"shopList",data:shopList.data.data});
+            }else{
+              alert("您的账户没有绑定的店铺，请绑定后使用！");
+              yield put(routerRedux.push('/login'));
+            }
         }
-      }
     },
     *loginStart({loginInfo},{call,put}){
-      if(!(yield call(LoginFetch.login,loginInfo))){
-        yield put({type:"showLoginFail"});
+      if(yield call(LoginFetch.login,loginInfo)){
+          yield put({type:"loginOk"});
       }else{
-        yield put({type:"loginOk"});
+          yield put({type:"showLoginFail"});
       }
     },
     *loginOk({},{put,call}){
@@ -95,6 +98,9 @@ export default {
     },
     loginWaiting(){
       return {alert:"none"};
+    },
+    netFail(){
+      return {netFail: true};
     },
     shopList(state,{data}){
       return {shopList: data};

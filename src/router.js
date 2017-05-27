@@ -8,6 +8,7 @@ function RouterConfig({ history }) {
     <Router history={history}>
       <Route path="/" component={IndexPage} />
       <Route path="/login" component={LoginPage} />
+      <Route path="/beta" component={LoginPage} />
     </Router>
   );
 }
