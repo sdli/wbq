@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/api/startApi.js"],"names":["require","exec"],"mappings":";;AAAAA,QAAQ,eAAR,EAAyBC,IAAzB","file":"startApi.js","sourcesContent":["require('child_process').exec(`babel-node ./src/api/index.js`);"]}

@@ -1,16 +1,18 @@
-var app = new(require('express'))();
-var bodyParser = require("body-parser");
+import "babel-polyfill";
+import express from 'express';
+import bodyParser from "body-parser";
 import config from "./utils/configs";
-var request = require("request");
-var date = require("./utils/date");
-var port = config.apiPort;
-var session = require("express-session");
-var captchapng = require('captchapng');
-var cookieParser = require("cookie-parser");
-var path = require("path");
-var apis = require("./lib");
-var co = require('co');
+import date from "./utils/date";
+const  port = config.apiPort;
 
+import session from "express-session";
+import captchapng from 'captchapng';
+import cookieParser from "cookie-parser";
+import path from "path";
+import apis from "./lib";
+import co from 'co';
+
+const app = new express();
 app.use(cookieParser());
 
 app.use(session({

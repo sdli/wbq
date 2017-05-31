@@ -1,5 +1,5 @@
 import config from "../utils/configs";
-import fetchRequest from "../../utils/request";
+import fetchRequest from "../utils/request";
 import date from "../utils/date";
 import request from "request";
 import co from 'co';
@@ -102,6 +102,7 @@ const InitFetch = function(met,url,vali) {
                     }
                 });
             }else{
+                console.log(url);
                 request({
                     mothod: "GET",
                     url: url,
@@ -123,6 +124,7 @@ function downLoadUrl(type){
         var data = result;
         req.session[type]=data.data.url;
         data.data.url=config.server+":"+config.serverPort+"/api/file/"+type;
+        console.log(req.session[type]);
         res.json(data);
     });
 }

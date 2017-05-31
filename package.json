@@ -3,7 +3,11 @@
   "scripts": {
     "start": "roadhog server",
     "build": "roadhog build",
-    "lint": "eslint --ext .js src test"
+    "lint": "eslint --ext .js src test",
+    "build-api": "babel ./src/api/ -d ./src/api-build --source-maps",
+    "start-api": "node ./src/api-build",
+    "start-pm2": "pm2 start ./src/api-build/index.js --name wbq-api && pm2 start server.js --name wbq-server",
+    "god-mode": "npm run build-api && npm run build && npm run start-pm2"
   },
   "engines": {
     "install-node": "6.9.2"
@@ -32,6 +36,7 @@
     "babel-plugin-dva-hmr": "^0.3.2",
     "babel-plugin-transform-runtime": "^6.9.0",
     "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.24.1",
     "classnames": "^2.2.5",
     "eslint": "^3.12.2",
     "eslint-config-airbnb": "^13.0.0",
