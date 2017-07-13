@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "start": "roadhog server",
-    "build": "roadhog build",
+    "build": "roadhog build && npm run build-api && pm2 start pm2.json --no-daemon --watch",
     "lint": "eslint --ext .js src test",
     "build-api": "babel ./src/api/ -d ./src/api-build --source-maps",
     "start-api": "node ./src/api-build",
