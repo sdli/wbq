@@ -14,6 +14,18 @@ class RegistrationForm extends React.Component {
     loading: false
   };
 
+  getStartTime(timeStamp){
+      const start = new Date(timeStamp);
+      const returnStamp = timeStamp - (start.getHours()*60*60+start.getMinutes()*60+start.getSeconds())*1000;
+      return returnStamp; 
+  }
+
+  getEndTime(timeStamp){
+      const end = new Date(timeStamp);
+      const returnStamp = timeStamp + (24*60*60 - end.getHours()*60*60 - end.getMinutes()*60 - end.getSeconds())*1000;
+      return returnStamp;
+  }
+
   handleSubmit = function(dispatch){
     const that = this;
     return  function(e){
@@ -22,9 +34,10 @@ class RegistrationForm extends React.Component {
           const initValues={
             shopname: values['shopname'],
             type: values["type"],
-            startTime: Date.parse(values["timePicker"][0]["_d"]),
-            endTime: Date.parse(values["timePicker"][1]["_d"])
+            startTime: that.getStartTime(Date.parse(values["timePicker"][0]["_d"])),
+            endTime: that.getEndTime(Date.parse(values["timePicker"][1]["_d"]))
           };
+          console.log(initValues);
           if (!err) {
               dispatch({type:"fetch/getExcel",values:initValues})
           }
@@ -40,7 +53,7 @@ class RegistrationForm extends React.Component {
       var timestamp2 = (typeof value !== "undefined")?Date.parse(value[1]["_d"]):null;
       if(timestamp1 == null || timestamp2 == null){
         callback("请选择起始时间！");
-      }else if((timestamp2-timestamp1)/1000 > 60*60*24*30){
+      }else if((timestamp2-timestamp1)/1000 > 60*60*24*31){
         callback('起始时间和终止时间不超过1个月！');
       }else{
         callback();

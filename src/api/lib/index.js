@@ -136,7 +136,7 @@ function downLoadUrl(type){
  * @param {*} next 
  */
 function loadAuth(req, res, next) {
-    let loginStatus = (typeof req.session.username === "undefined" || typeof req.session.password === "undefined") ? false : true;
+    let loginStatus = (typeof req.session.username === "undefined" || typeof req.session.password === "undefined" || req.session.username == null) ? false : true;
     if (loginStatus) {
         let result = {
             code: '1',

@@ -10,14 +10,15 @@ class MainLayout extends Component{
     }
 
     render(){
-        const {headerMenu,ContentComponent,IndexSider} = this.props;
+        const {headerMenu,ContentComponent,IndexSider,UserInfoMenu} = this.props;
         return (
             <Layout>
                     <Header className="header">
                         <div className={styles.logo} >
                             <p style={{lineHeight:"31px",color:"#ffffff",fontSize:"18px"}}>温碧泉报表系统</p>    
                         </div>
-                    {headerMenu}
+                        {headerMenu}
+                        {UserInfoMenu}
                     </Header>
                     <Content style={{ padding: '16px 50px' }}>
                         <Layout style={{ padding: '24px 0', background: '#fff' }}>

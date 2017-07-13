@@ -4,9 +4,8 @@ const config = {
         server:ServerConfig.server,
         apiPort: ServerConfig.apiPort,
         serverPort: ServerConfig.serverPort,
-        yunposServer: "http://120.76.100.12",//http://192.168.1.129:9300/ http://183.234.63.50
+        yunposServer: "http://120.76.25.41",//http://192.168.1.129:9300/ http://183.234.63.50
         yunposPort: "9300",
-        apiPort: "3060",
         yunposApi:{
             login: "/api/user/login",
             stores: "/api/user/store",

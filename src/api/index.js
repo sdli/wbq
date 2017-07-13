@@ -72,4 +72,14 @@ app.get(/file/,function(req,res,next){
     startFetch(req,res);
 });
 
+app.post("/logout",function(req,res,next){
+    req.session.username = null;
+    req.session.password = null;
+    let result = {
+        "code":1,
+        "msg": "logout succ"
+    };
+    res.json(result);
+});
+
 app.listen(port, apis.listen);

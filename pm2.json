@@ -1,0 +1,10 @@
+[{
+    "name"        : "server",
+    "script"      : "server.js",
+    "error_file" : "./src/logs/server.log"
+},{
+    "name"        : "api",
+    "script"      : "./src/api-build/index.js",
+    "error_file" : "./src/logs/api.log"
+}
+]

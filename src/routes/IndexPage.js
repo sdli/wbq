@@ -5,6 +5,7 @@ import HeaderMenu from "../components/menu/headerMenu.js";
 import ContentComponent from "../components/contents/indexContent";
 import IndexSider from "../components/menu/indexDropDown";
 import Loading from "../components/layout/loading.main";
+import UserInfoMenu from "../components/menu/headerUserInfos";
 
 const Contents = function({dispatch,src,ifDownload,shops}){
   return(
@@ -23,14 +24,22 @@ const Contents = function({dispatch,src,ifDownload,shops}){
       </div>
   );
 };
+
+const logoutFunc = function(dispatch){
+  return function(){
+      if(confirm("退出登录？")){
+        dispatch({type:"login/logout"});
+      }
+  }
+}
 function IndexPage({dispatch,fetch,login,loading}) {
-  console.log(loading);
   if(loading.models.login) return null;
   return (
     (typeof login.shopList !=="undefined"&& login.shopList.length != 0)?<Layout 
       headerMenu={<HeaderMenu />} 
       ContentComponent={<Contents dispatch={dispatch} src={fetch.src} ifDownload={fetch.ifDownload} shops={login.shopList} />}
       IndexSider={<IndexSider />}
+      UserInfoMenu = {<UserInfoMenu logoutFunc={logoutFunc(dispatch)} />}
     />:<Loading />
   );
 }

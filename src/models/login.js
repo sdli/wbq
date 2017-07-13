@@ -26,8 +26,8 @@ const LoginFetch = {
         console.log(data);
         //成功后返回effects yield结果
         switch(parseInt(data.data.code)){
-              case 200: return true;break;
-              case 400: return false;break;
+              case 200: return true;
+              case 400: return false;
               default : return false;
         }
     },
@@ -42,11 +42,26 @@ const LoginFetch = {
       console.log(data);
       //成功后返回effects yield结果
       switch(parseInt(data.data.code)){
-            case 200: return data;break;
-            case 400: return false;break;
+            case 200: return data;
+            case 400: return false;
             default : return false;
         }
-      },
+    },
+    logout: function*(){
+      let data = yield request('/api/logout', {
+          method: 'POST',
+          headers: {
+              "Content-type": "application/x-www-form-urlencoded; charset=UTF-8" 
+          },
+          credentials: 'include'
+      });
+      //成功后返回effects yield结果
+      switch(parseInt(data.data.code)){
+            case 1: return true;
+            case 0: return false;
+            default : return false;
+        }
+    }
 };
 
 export default {
@@ -90,6 +105,14 @@ export default {
     },
     *loginOk({},{put,call}){
       yield put(routerRedux.push('/'));
+    },
+    *logout({},{put,call}){
+      const logoutResult = yield call(LoginFetch.logout);
+      if(logoutResult){
+        yield put(routerRedux.push("/login"));
+      }else{
+        alert("网络异常，请稍后再试！");
+      }
     }
   },
   reducers: {
